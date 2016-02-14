@@ -1,0 +1,32 @@
+package Server;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.Scanner;
+
+/* Simple Java Proxy
+ * Listens for additional connecting clients,
+ * creates multithreaded socket connections,
+ * sends and recieves requested information
+ * from connected clients, keeps a cache
+ * of recently accessed webpages, and logs
+ * all activity while doing so.
+ */
+public class Server {
+	
+	public static int portNumber = 555;
+	
+	public static void main(String[] args) throws Exception {
+		System.out.println("Starting server...");
+		try {
+			ServerSocket serverSocket = new ServerSocket(portNumber);
+			System.out.println("Successfully created server socket");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Scanner input = new Scanner(System.in);
+		boolean running = true;
+		
+		System.out.println("Finished!");
+	}
+
+}
