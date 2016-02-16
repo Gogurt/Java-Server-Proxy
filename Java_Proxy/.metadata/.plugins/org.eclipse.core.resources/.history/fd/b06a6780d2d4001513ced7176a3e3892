@@ -31,6 +31,7 @@ public class Server {
 	}
 
 	public static void runServer() throws Exception {
+		
 		System.out.println("Starting server...");
 		ServerSocket serverSocket;
 		Socket clientSocket;
@@ -47,6 +48,7 @@ public class Server {
 				
 			}
 		}
+		
 	}
 }
 

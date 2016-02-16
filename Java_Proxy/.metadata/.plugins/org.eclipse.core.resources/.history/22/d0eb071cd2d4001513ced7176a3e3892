@@ -31,6 +31,7 @@ public class Server {
 	}
 
 	public static void runServer() throws Exception {
+		
 		System.out.println("Starting server...");
 		ServerSocket serverSocket;
 		Socket clientSocket;
@@ -47,6 +48,7 @@ public class Server {
 				
 			}
 		}
+		
 	}
 }
 
@@ -54,7 +56,7 @@ class ClientSocketThread extends Thread {
 	Socket clientSocket;
 	public ClientSocketThread(Socket clientSocket) throws Exception {
 		this.clientSocket = clientSocket;
-		System.out.println("Successfully connected request on..." + clientSocket.getPort());
+		System.out.println("Successfully connected on..." + clientSocket.getPort());
 		
 		try
 		{
@@ -66,13 +68,13 @@ class ClientSocketThread extends Thread {
 		        String message = new String(buffer).substring(0, charsRead);
 		        System.out.println(message);
 		    }
-		    
-		    //This is where the thread will listen to the connected client
-			//in order to send and receive web page information,
-			//as well as verifying/adding the webpage as a cache object.
-		
 		} finally {
 			clientSocket.close();
 		}
+		
+		
+		//This is where the thread will listen to the connected client
+		//in order to send and receive web page information,
+		//as well as verifying/adding the webpage as a cache object.
 	}
 }
