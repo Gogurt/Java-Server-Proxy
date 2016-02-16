@@ -77,10 +77,8 @@ class ClientSocketThread extends Thread {
 		    while ((charsRead = in.read(buffer)) != -1)
 		    {
 		        String message = new String(buffer).substring(0, charsRead);
-		        System.out.println(message);
+
 		    }
-		} finally {
-			
 		}
 		
 		

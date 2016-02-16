@@ -53,7 +53,8 @@ public class Server {
 	         */
 	        
 	        Thread clientThread = new ClientSocketThread(clientSocket);
-	        clientThread.start();      	
+	        clientThread.start();
+		        	
 		 
 		        
 		} finally {
@@ -69,19 +70,7 @@ class ClientSocketThread extends Thread {
 		this.clientSocket = clientSocket;
 		System.out.println("Successfully connected on..." + clientSocket.getPort());
 		
-		try
-		{
-		    char[] buffer = new char[2048];
-		    int charsRead = 0;
-		    BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-		    while ((charsRead = in.read(buffer)) != -1)
-		    {
-		        String message = new String(buffer).substring(0, charsRead);
-		        System.out.println(message);
-		    }
-		} finally {
-			
-		}
+		
 		
 		
 		//This is where the thread will listen to the connected client

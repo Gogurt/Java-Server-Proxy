@@ -69,19 +69,12 @@ class ClientSocketThread extends Thread {
 		this.clientSocket = clientSocket;
 		System.out.println("Successfully connected on..." + clientSocket.getPort());
 		
-		try
-		{
-		    char[] buffer = new char[2048];
-		    int charsRead = 0;
-		    BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-		    while ((charsRead = in.read(buffer)) != -1)
-		    {
-		        String message = new String(buffer).substring(0, charsRead);
-		        System.out.println(message);
-		    }
-		} finally {
-			
-		}
+		PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+        BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        out.println("Hello Server!");
+        System.out.println(in.readLine());
+        out.close();
+        in.close();
 		
 		
 		//This is where the thread will listen to the connected client
