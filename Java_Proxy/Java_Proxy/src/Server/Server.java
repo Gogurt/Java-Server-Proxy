@@ -29,7 +29,8 @@ public class Server {
 	
 	public static int portNumber = 555;
 	
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception {        
+
 		Server server = new Server();
 		server.runServer();
 		
@@ -57,6 +58,7 @@ public class Server {
 }
 
 class ClientSocketThread extends Thread {
+    LogIt newLogger = new LogIt();
 	Socket clientSocket;
 	public ClientSocketThread(Socket clientSocket) throws Exception {
 		this.clientSocket = clientSocket;
@@ -64,6 +66,7 @@ class ClientSocketThread extends Thread {
 		
 		//for parsing URL
 		String urlToCall = "";
+		String token0 = "";
 		int length;
 		
 		try
@@ -76,25 +79,21 @@ class ClientSocketThread extends Thread {
 		    while ((charsRead = in.read(buffer)) != -1)
 		    {
 		        String message = new String(buffer).substring(0, charsRead);
-		        if(message.contains("query=")) {
-		        	System.out.println("Query detected!");
-		        	System.out.println(message.substring(message.indexOf("query="), message.length()));
-		        	queryRequest = message.substring(message.indexOf("query="), message.length());
-		        	System.out.println(queryRequest.substring(6, queryRequest.length() - 25));
-		        	queryDetected = false; //Only false for debugging purposes
-		        	
-		        	 //parses URL!!
-			        String[] tokens = message.split(" ");
-			        urlToCall = tokens[1];
-			        System.out.println("The URL requested is: " + urlToCall);
-			        
-			        // counts how many tokens there are
-			        length = tokens.length;
-			        for(int i = 0; i < length; i++)
-			        {
-			        	System.out.println(tokens[i]);		        
-			        }
+		        
+		        //parses URL!!
+		        String[] tokens = message.split(" ");
+		        urlToCall = tokens[1];
+		        System.out.println("The URL requested is: " + urlToCall);
+		        //this logs the request into a text file
+		        newLogger.logRequest(tokens[1], "192.168.0.15");
+		        
+		        // counts how many tokens there are
+		        length = tokens.length;
+		        for(int i = 0; i < length; i++)
+		        {
+		        	System.out.println(tokens[i]);		        
 		        }
+		        
 		    }
 		    if(queryDetected) {
 		    	//HTTP GET occurs
