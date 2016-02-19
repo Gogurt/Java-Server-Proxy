@@ -62,6 +62,9 @@ class ClientSocketThread extends Thread {
 		this.clientSocket = clientSocket;
 		System.out.println("Successfully connected request on..." + clientSocket.getPort());
 		
+		//for parsing URL
+		String urlToCall = "";
+		
 		try
 		{
 		    char[] buffer = new char[2048];
@@ -78,6 +81,11 @@ class ClientSocketThread extends Thread {
 		        	queryRequest = message.substring(message.indexOf("query="), message.length());
 		        	System.out.println(queryRequest.substring(6, queryRequest.length() - 25));
 		        	queryDetected = false; //Only false for debugging purposes
+		        	
+		        	 //parses URL!!
+			        String[] tokens = message.split(" ");
+			        urlToCall = tokens[1];
+			        System.out.println("The URL requested is: " + urlToCall);
 		        }
 		    }
 		    if(queryDetected) {
