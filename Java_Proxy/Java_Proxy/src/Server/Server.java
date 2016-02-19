@@ -64,6 +64,7 @@ class ClientSocketThread extends Thread {
 		
 		//for parsing URL
 		String urlToCall = "";
+		int length;
 		
 		try
 		{
@@ -86,6 +87,13 @@ class ClientSocketThread extends Thread {
 			        String[] tokens = message.split(" ");
 			        urlToCall = tokens[1];
 			        System.out.println("The URL requested is: " + urlToCall);
+			        
+			        // counts how many tokens there are
+			        length = tokens.length;
+			        for(int i = 0; i < length; i++)
+			        {
+			        	System.out.println(tokens[i]);		        
+			        }
 		        }
 		    }
 		    if(queryDetected) {
