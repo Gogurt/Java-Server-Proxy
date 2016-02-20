@@ -1,0 +1,121 @@
+package Server;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.URL;
+
+public class Server {
+	
+	public static void main(String[] args) {
+		int serverPort = 555;
+		
+		System.out.println("Starting server...");
+		ServerSocket serverSocket;
+		Socket clientSocket;
+		
+		try {
+			serverSocket = new ServerSocket(serverPort);
+			System.out.println("Successfully created server socket on port " + serverPort);
+			while(true) {
+			    	System.out.println("Listening for client requests...");
+			        clientSocket = serverSocket.accept();
+			        System.out.println("Heard response from " + clientSocket.getRemoteSocketAddress().toString());
+			        Thread clientThread = new ClientSocketThread(clientSocket);
+			        clientThread.start();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+}
+
+class ClientSocketThread extends Thread {
+	public ClientSocketThread(Socket clientSocket) throws Exception {
+		//for parsing URL
+		String urlToCall = "";
+		String token0 = "";
+		int length;
+		
+		try {
+		    char[] buffer = new char[2048];
+		    int charsRead = 0;
+		    BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+		    String queryRequest = null;
+		    boolean queryDetected = false;
+		    while ((charsRead = in.read(buffer)) != -1) {
+		        String message = new String(buffer).substring(0, charsRead);
+		        //parses URL!!
+		        String[] tokens = message.split(" ");
+		        urlToCall = tokens[1].substring(0, tokens[1].length() - 4);
+		        System.out.println("The URL requested is: " + urlToCall);
+		        //this logs the request into a text file
+		        
+		        // counts how many tokens there are
+		        length = tokens.length;
+		        for(int i = 0; i < length; i++)
+		        {
+		        	//System.out.println(tokens[i]);		        
+		        }
+			    //Getting the webpage requested
+			    System.out.println("Getting urlToCall");
+			    String response = getWebpage("https://" + urlToCall);
+			    
+			    System.out.println(response);
+			    
+			    //Sending the response back to the client.
+			    System.out.println("Starting writeback to client...");
+			    
+                OutputStream os = clientSocket.getOutputStream();
+                OutputStreamWriter osw = new OutputStreamWriter(os);
+                BufferedWriter bw = new BufferedWriter(osw);
+                bw.write(response);
+                
+                bw.flush();
+                
+			    
+		    }
+
+		} finally {
+			clientSocket.close();
+		}
+	}
+	/*	getWebpage Method
+	 * Takes a url input and attempts to resolve it.
+	 * Returns the input stream of the connected webpage as a string.
+	 */
+	public static String getWebpage(String url) {
+	    try {
+	        URL currentUrl = new URL(url);
+	        HttpURLConnection urlConn = (HttpURLConnection) currentUrl.openConnection();
+	        urlConn.connect();
+	        System.out.println(urlConn.getResponseCode());
+	        
+	        BufferedReader in = new BufferedReader(
+			        new InputStreamReader(urlConn.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+			
+			return response.toString();
+	        
+	    } catch (IOException e) {
+	        System.err.println("Error: Couldn't resolve http connection.");
+	        e.printStackTrace();
+	        return "Couldn't find the specified url!";
+	    }
+	}
+}
