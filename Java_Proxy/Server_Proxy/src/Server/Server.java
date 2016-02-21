@@ -66,6 +66,8 @@ class ClientSocketThread extends Thread {
         InputStream inputStream = clientSocket.getInputStream();
 		
 		String response = null;
+		// Logging object
+		LogIt logger = new LogIt();
 		
 		try {
 		    char[] buffer = new char[2048];
@@ -83,6 +85,7 @@ class ClientSocketThread extends Thread {
 		        
 		        System.out.println("The URL requested is: " + urlToCall);
 		        //Call Logit here to place log into a text file
+		        logger.logRequest(urlToCall, clientSocket.getLocalAddress().getLocalHost().toString());
 		        
 		        // counts how many tokens there are
 		        length = tokens.length;
