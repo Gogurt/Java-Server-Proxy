@@ -1,3 +1,4 @@
+package Server;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,12 +13,27 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
 
+/* Java Server Proxy
+ * A proxy that listens for connection clients,
+ * passes their requests to their own thread,
+ * processes their request and attempts to resolve
+ * the clients requested url.
+ */
 public class Server {
+	/*	Main
+	 * 	Handles the constantly-listening server socket.
+	 *  When a client is found, it gives it it's own socket
+	 *  and a thread to process its request as the server
+	 *  socket continues to listen for additional requests.
+	 */
+	public static LogIt logIt = new LogIt();
 	
 	public static void main(String[] args) {
+		
 		int serverPort = 555;
 		
 		System.out.println("Starting server...");
+		
 		ServerSocket serverSocket;
 		Socket clientSocket;
 		
@@ -60,7 +76,11 @@ class ClientSocketThread extends Thread {
 		        String message = new String(buffer).substring(0, charsRead);
 		        //parses URL!!
 		        String[] tokens = message.split(" ");
-		        urlToCall = tokens[1];
+		        
+		        //This is the format urlToCall has to be in order for it to work
+		        urlToCall = "http://" + tokens[1].substring(0, tokens[1].length() - 4);
+		        //urlToCall = tokens[1]; This is what was here before
+		        
 		        System.out.println("The URL requested is: " + urlToCall);
 		        //Call Logit here to place log into a text file
 		        
@@ -68,7 +88,7 @@ class ClientSocketThread extends Thread {
 		        length = tokens.length;
 		        
 			    //Getting the webpage requested
-			    System.out.println("Getting urlToCall");
+			    System.out.println("Getting urlToCall...");
 			    
 			    BufferedReader is = null;
 			    
@@ -101,6 +121,10 @@ class ClientSocketThread extends Thread {
 			    //Sending the response back to the client.
 			    System.out.println("Starting writeback to client...");
 
+			    //Gives an array out of bounds exception,
+			    //possibly due to attempting to send an entire
+			    //html document in one write method.
+			    //This is where I think we seperate it into bytes.
 			    PrintWriter out = new PrintWriter(outputStream);
 			    out.write(response);
 			    
