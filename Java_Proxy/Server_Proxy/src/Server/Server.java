@@ -1,4 +1,4 @@
-package Server;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
@@ -60,66 +60,58 @@ class ClientSocketThread extends Thread {
 		        String message = new String(buffer).substring(0, charsRead);
 		        //parses URL!!
 		        String[] tokens = message.split(" ");
-		        urlToCall = tokens[1].substring(0, tokens[1].length() - 4);
+		        urlToCall = tokens[1];
 		        System.out.println("The URL requested is: " + urlToCall);
-		        //this logs the request into a text file
+		        //Call Logit here to place log into a text file
 		        
 		        // counts how many tokens there are
 		        length = tokens.length;
 		        
 			    //Getting the webpage requested
 			    System.out.println("Getting urlToCall");
-			    response = getWebpage("https://" + urlToCall);
+			    
+			    BufferedReader is = null;
+			    
+			    try {
+			        URL currentUrl = new URL(urlToCall);
+			        HttpURLConnection urlConn = (HttpURLConnection) currentUrl.openConnection();
+			        urlConn.connect();
+			        System.out.println(urlConn.getResponseCode());
+			        
+			        is = new BufferedReader(
+					        new InputStreamReader(urlConn.getInputStream()));
+					String inputLine;
+					StringBuffer responsebuf = new StringBuffer();
+
+					while ((inputLine = is.readLine()) != null) {
+						responsebuf.append(inputLine);
+					}
+					is.close();
+					
+					response = responsebuf.toString();
+			        
+			    } catch (IOException e) {
+			        System.err.println("Error: Couldn't resolve http connection.");
+			        e.printStackTrace();
+			        System.out.println("Couldn't find the specified url!");
+			    }
 			    
 			    System.out.println(response);
 			    
-			    
 			    //Sending the response back to the client.
 			    System.out.println("Starting writeback to client...");
-			    
+
 			    PrintWriter out = new PrintWriter(outputStream);
-			    /*	This is where I'm running into problems.
-			     * Basically, the socket keeps closing before
-			     * I can send the html back to the connected browser.
-			     * I've done some research, and everything I run into regarding
-			     * it says I'm responsible on the server side for manually
-			     * closing the socket and attempting to write to it anyways.
-			     * I don't have the method anywhere to close it and
-			     * I'm still getting this error.
-			     */
+			    out.write(response);
+			    
+			    System.out.println("Writeback successful!");
+			    
+			    //Test this by putting "www.google.com" into the url bar in firefox. 
+			    //It should return the header of the page and the html.
 		    }
 
 		} finally {
-			
+			clientSocket.close();
 		}
-	}
-	/*	getWebpage Method
-	 * Takes a url input and attempts to resolve it.
-	 * Returns the input stream of the connected webpage as a string.
-	 */
-	public static String getWebpage(String url) {
-	    try {
-	        URL currentUrl = new URL(url);
-	        HttpURLConnection urlConn = (HttpURLConnection) currentUrl.openConnection();
-	        urlConn.connect();
-	        System.out.println(urlConn.getResponseCode());
-	        
-	        BufferedReader in = new BufferedReader(
-			        new InputStreamReader(urlConn.getInputStream()));
-			String inputLine;
-			StringBuffer response = new StringBuffer();
-
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-			in.close();
-			
-			return response.toString();
-	        
-	    } catch (IOException e) {
-	        System.err.println("Error: Couldn't resolve http connection.");
-	        e.printStackTrace();
-	        return "Couldn't find the specified url!";
-	    }
 	}
 }
