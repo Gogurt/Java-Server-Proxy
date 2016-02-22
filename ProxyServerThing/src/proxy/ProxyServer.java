@@ -8,7 +8,7 @@ public class ProxyServer {
     public static void main(String[] args) throws IOException {
         
         //Create a webpage cache object
-        SimpleCache<Webpage> webCache = new SimpleCache<Webpage>();
+        SimpleCache<WebBufferReader> webCache = new SimpleCache<WebBufferReader>();
         
         ServerSocket serverSocket = null;
         boolean listening = true;

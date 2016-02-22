@@ -27,7 +27,7 @@ public class ProxyThread extends Thread {
             
             DataOutputStream out =
 		new DataOutputStream(socket.getOutputStream());
-            BufferedReader in = new BufferedReader(
+            WebBufferReader in = new WebBufferReader(
 		new InputStreamReader(socket.getInputStream()));
 
             String inputLine, outputLine;
@@ -56,7 +56,7 @@ public class ProxyThread extends Thread {
             ///////////////////////////////////
 
 
-            BufferedReader rd = null;
+            WebBufferReader rd = null;
             try {
                 //System.out.println("sending request
 		//to real server for url: "
@@ -85,7 +85,7 @@ public class ProxyThread extends Thread {
                 if (conn.getContentLength() > 0) {
                     try {
                         is = conn.getInputStream();
-                        rd = new BufferedReader(new InputStreamReader(is));
+                        rd = new WebBufferReader(new InputStreamReader(is));
                     } catch (IOException ioe) {
                         System.out.println(
 				"********* IO EXCEPTION **********: " + ioe);
