@@ -14,7 +14,9 @@ public class ProxyThread extends Thread {
         this.socket = socket;
         this.webCache = cache;
     }
+    // for logging user requests
     LogIt logger = new LogIt();
+    int urlSizeByte;
     
 
     public void run() {
@@ -26,7 +28,6 @@ public class ProxyThread extends Thread {
 
         try {
             
-            logger.logRequest("www.google.com", "192.168.90");
             
             DataOutputStream out =
 		new DataOutputStream(socket.getOutputStream());
@@ -96,6 +97,8 @@ public class ProxyThread extends Thread {
                     }
                 }
                 
+                
+                
                 //Update the webCache
                 webCache.put(urlToCall, is);
                 //end send request to server, get response from server
@@ -107,11 +110,14 @@ public class ProxyThread extends Thread {
                 
                 byte by[] = new byte[ BUFFER_SIZE ];
                 int index = is2.read( by, 0, BUFFER_SIZE );
+                urlSizeByte = index; // used by LogIt class to output the size of the url to log
                 while ( index != -1 )
                 {
                   out.write( by, 0, index );
                   index = is2.read( by, 0, BUFFER_SIZE );
                 }
+                // calls the LogIt log function to store request info into logRequests.txt
+                logger.logRequest(urlToCall, socket.getLocalAddress().getHostAddress().toString(), urlSizeByte);
                 out.flush();
 
                 //end send response to client

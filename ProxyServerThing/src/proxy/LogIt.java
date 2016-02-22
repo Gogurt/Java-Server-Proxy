@@ -1,6 +1,7 @@
-/* To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* This class is designed to log user requests when called for each ProxyThread.
+ * Logs: Time-Stamp, Requested URL, User IP, and url size in bytes.
+ * Created for Assignment 2 - 415 Network and Parallel Computation
+ * 02.22.16
  */
 package proxy;
 
@@ -8,7 +9,6 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-//import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -25,13 +25,15 @@ public class LogIt
     //SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:ms");
     Date date = new Date();
     
-    public synchronized void logRequest(String clientURL, String clientIP) throws IOException 
+    // the keyword synchronized is used to ensure threads are not overwriting a critical area. i.e. the logRequests.txt file
+    public synchronized void logRequest(String clientURL, String clientIP, int urlSizeByte) throws IOException 
     {
         
         try
         {
+        	//prints to txt file
             PrintWriter outputStream = new PrintWriter(new FileWriter(logFile, true));
-            outputStream.write("\r\n" + "Date: " + date + "  URL: " + clientURL + "  Client IP: " + clientIP);
+            outputStream.write("\r\n" + date + "	" + clientURL + "	" + clientIP + "	" + urlSizeByte);
             
             
             outputStream.close();
