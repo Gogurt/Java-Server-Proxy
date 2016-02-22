@@ -2,9 +2,14 @@ package proxy;
 
 import java.net.*;
 import java.io.*;
+import java.nio.*;
 
 public class ProxyServer {
     public static void main(String[] args) throws IOException {
+        
+        //Create a webpage cache object
+        SimpleCache<Webpage> webCache = new SimpleCache<Webpage>();
+        
         ServerSocket serverSocket = null;
         boolean listening = true;
 
