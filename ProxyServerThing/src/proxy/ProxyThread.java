@@ -6,10 +6,13 @@ import java.util.*;
 
 public class ProxyThread extends Thread {
     private Socket socket = null;
+    SimpleCache webCache;
+    boolean pageIsCached = false;
     private static final int BUFFER_SIZE = 32768;
-    public ProxyThread(Socket socket) {
+    public ProxyThread(Socket socket, SimpleCache cache) {
         super("ProxyThread");
         this.socket = socket;
+        this.webCache = cache;
     }
     LogIt logger = new LogIt();
     
@@ -27,7 +30,7 @@ public class ProxyThread extends Thread {
             
             DataOutputStream out =
 		new DataOutputStream(socket.getOutputStream());
-            WebBufferReader in = new WebBufferReader(
+            BufferedReader in = new BufferedReader(
 		new InputStreamReader(socket.getInputStream()));
 
             String inputLine, outputLine;
@@ -54,13 +57,24 @@ public class ProxyThread extends Thread {
             }
             //end get request from client
             ///////////////////////////////////
+            
+            if(webCache.get(urlToCall) != null)
+            {
+                System.out.println("Web page " + urlToCall + " found in cache.");
+                pageIsCached = true;
+            }
+            else
+            {
+                System.out.println("Web page " + urlToCall + " not found in cache.");
+                pageIsCached = false;
+            }
+            
+            ///////////////////////////////////
 
 
-            WebBufferReader rd = null;
+            BufferedReader rd = null;
             try {
-                //System.out.println("sending request
-		//to real server for url: "
-                //        + urlToCall);
+                
                 ///////////////////////////////////
                 //begin send request to server, get response from server
                 URL url = new URL(urlToCall);
@@ -68,16 +82,6 @@ public class ProxyThread extends Thread {
                 conn.setDoInput(true);
                 //not doing HTTP posts
                 conn.setDoOutput(false);
-                //System.out.println("Type is: "
-			//+ conn.getContentType());
-                //System.out.println("content length: "
-			//+ conn.getContentLength());
-                //System.out.println("allowed user interaction: "
-			//+ conn.getAllowUserInteraction());
-                //System.out.println("content encoding: "
-			//+ conn.getContentEncoding());
-                //System.out.println("content type: "
-			//+ conn.getContentType());
 
                 // Get the response
                 InputStream is = null;
@@ -85,23 +89,28 @@ public class ProxyThread extends Thread {
                 if (conn.getContentLength() > 0) {
                     try {
                         is = conn.getInputStream();
-                        rd = new WebBufferReader(new InputStreamReader(is));
+                        rd = new BufferedReader(new InputStreamReader(is));
                     } catch (IOException ioe) {
                         System.out.println(
 				"********* IO EXCEPTION **********: " + ioe);
                     }
                 }
+                
+                //Update the webCache
+                webCache.put(urlToCall, is);
                 //end send request to server, get response from server
                 ///////////////////////////////////
 
                 ///////////////////////////////////
                 //begin send response to client
+                InputStream is2 = (InputStream) webCache.get(urlToCall);
+                
                 byte by[] = new byte[ BUFFER_SIZE ];
-                int index = is.read( by, 0, BUFFER_SIZE );
+                int index = is2.read( by, 0, BUFFER_SIZE );
                 while ( index != -1 )
                 {
                   out.write( by, 0, index );
-                  index = is.read( by, 0, BUFFER_SIZE );
+                  index = is2.read( by, 0, BUFFER_SIZE );
                 }
                 out.flush();
 

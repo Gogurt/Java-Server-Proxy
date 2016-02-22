@@ -4,11 +4,13 @@ import java.net.*;
 import java.io.*;
 import java.nio.*;
 
+        
+
 public class ProxyServer {
     public static void main(String[] args) throws IOException {
         
         //Create a webpage cache object
-        SimpleCache<String> webCache = new SimpleCache<String>();
+        SimpleCache<InputStream> webCache = new SimpleCache<InputStream>();
         
         ServerSocket serverSocket = null;
         boolean listening = true;
@@ -29,7 +31,7 @@ public class ProxyServer {
         }
 
         while (listening) {
-            new ProxyThread(serverSocket.accept()).start();
+            new ProxyThread(serverSocket.accept(), webCache).start();
         }
         serverSocket.close();
     }
