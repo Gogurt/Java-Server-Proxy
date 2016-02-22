@@ -1,4 +1,4 @@
-package Server;
+package proxy;
 /*
  * SimpleCache
  * Copyright (C) 2008 Christian Schenk
