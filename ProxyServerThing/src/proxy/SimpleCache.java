@@ -44,10 +44,10 @@ public class SimpleCache<T> {
 
 	/**
 	 * Constructs the cache with a default expiration time for the objects of
-	 * 100 seconds.
+	 * 86400 seconds, or 24 hours.
 	 */
 	public SimpleCache() {
-		this(100);
+		this(86400);
 	}
 
 	/**
